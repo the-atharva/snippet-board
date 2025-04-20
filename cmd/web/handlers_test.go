@@ -2,19 +2,23 @@ package main
 
 import (
 		"io/ioutil"
+		"log"
 		"net/http" 	
 		"net/http/httptest"
 		"testing"
 )
 
-func TestPint(t *testing.T) {
-		rr := httptest.NewRecorder()
-		r, err := http.NewRequest("Get", "/", nil)
+func TestPing(t *testing.T) {
+		app := &application {
+				errorLog: log.New(ioutil.Discard, "", 0),
+				infoLog: log.New(ioutil.Discard, "", 0),
+		}
+		ts := httptest.NewTLSServer(app.routes())
+		defer ts.Close()
+		rs, err := ts.Client().Get(ts.URL + "/ping")
 		if err != nil {
 				t.Fatal(err)
 		}
-		ping(rr, r)
-		rs := rr.Result()
 		if rs.StatusCode != http.StatusOK {
 				t.Errorf("Expected %d. Got %d", http.StatusOK, rs.StatusCode)
 		}
